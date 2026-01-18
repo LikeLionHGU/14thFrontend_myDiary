@@ -12,3 +12,15 @@
     justify-content: center;
     align-items: center;
 }
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #757575;
+}
+
+.react-calendar__month-view__days__day--weekend:not(.react-calendar__month-view__days__day--neighboringMonth) {
+  color: inherit;
+}
+
+.react-calendar__month-view__days__day:not(.react-calendar__month-view__days__day--neighboringMonth):nth-child(7n + 1) {
+  color: #d10000;
+}
