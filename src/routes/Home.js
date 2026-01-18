@@ -19,6 +19,7 @@ function Home() {
     <div className="home">
       <div className="calendar-container">
         <Calendar
+          calendarType="hebrew"
           onChange={setDate}
           value={date}
           onClickDay={(clickedDate) => {
