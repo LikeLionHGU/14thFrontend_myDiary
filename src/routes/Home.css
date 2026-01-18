@@ -1,3 +1,14 @@
 .home {
-    border: solid 1px black;
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calendar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
