@@ -10,6 +10,7 @@ function Diary() {
   const [todos, setTodos] = useState([]);
 
   const [text, setText] = useState("");
+  const [thankText, setThankText] = useState("");
 
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -17,16 +18,27 @@ function Diary() {
   useEffect(() => {
     if (!user) return;
 
-    // ✅ Diary load
     const diaryKey = `diary_contents_${user.uid}`;
     const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
     setText(diaries[date] || "");
 
-    // ✅ Todo load (user별 + date별)
     const todoKey = `todo_${user.uid}`;
     const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
     setTodos(todoByDate[date] || []);
+
+    const thankKey = `thank_${user.uid}`;
+    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
+    setThankText(thankByDate[date] || "");
   }, [date, user]);
+
+  const saveThank = () => {
+    if (!user) return;
+
+    const thankKey = `thank_${user.uid}`;
+    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
+    thankByDate[date] = thankText;
+    localStorage.setItem(thankKey, JSON.stringify(thankByDate));
+  };
 
   const saveDiary = () => {
     if (!user) {
@@ -39,10 +51,11 @@ function Diary() {
     diaries[date] = text;
     localStorage.setItem(diaryKey, JSON.stringify(diaries));
 
+    saveThank();
+
     alert("저장되었습니다!");
   };
 
-  // ✅ Todo 저장 helper
   const saveTodos = (nextTodos) => {
     if (!user) return;
 
@@ -52,7 +65,6 @@ function Diary() {
     localStorage.setItem(todoKey, JSON.stringify(todoByDate));
   };
 
-  // ✅ Todo 추가
   const addTodo = () => {
     if (!user) {
       alert("로그인이 필요합니다!");
@@ -139,13 +151,20 @@ function Diary() {
       </div>
 
       <div className="memo-card">
-        <div className="memo-header"></div>
-
         <textarea
           className="memo-textarea"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="오늘의 재밌는 얘기..."
+        />
+      </div>
+
+      <div className="thank-card">
+        <textarea
+          className="thank-textarea"
+          value={thankText}
+          onChange={(e) => setThankText(e.target.value)}
+          placeholder="오늘의 감사 일기!"
         />
       </div>
 
