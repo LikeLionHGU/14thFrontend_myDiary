@@ -1,0 +1,80 @@
+.startPage-background {
+    height: 100vh;
+    /*화면전체 높이*/
+    display: flex;
+    justify-content: center;
+    /*가로 중앙*/
+    align-items: center;
+    /*세로 중앙*/
+    background-color: #E2DED1;
+    margin: 0;
+}
+
+.start-card {
+    background-color: #F1EFE8;
+    padding: 60px 40px;
+    border-radius: 24px;
+    text-align: center;
+
+    width: 100%;
+    max-width: 400px;
+    max-height: 480px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.diary-title {
+    font-size: 3rem;
+    font-family: "Edu SA Hand", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+
+    color: black;
+    margin-bottom: 50px;
+    letter-spacing: 4px;
+
+}
+
+.start-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.btn {
+    padding: 18px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-family: "Edu SA Hand", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.start-login-btn {
+    background-color: black;
+    color: #F1EFE8;
+    border: 2px solid black;
+}
+
+.start-login-btn:hover {
+    background-color: #333333;
+    border-color: #333333;
+    transform: translateY(-2px);
+}
+
+.start-signup-btn {
+    background-color: transparent;
+    color: black;
+    border: 2px solid black;
+}
+
+.start-signup-btn:hover {
+    background-color: black;
+    color: #F1EFE8;
+}
