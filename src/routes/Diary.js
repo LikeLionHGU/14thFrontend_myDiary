@@ -19,8 +19,8 @@ function Diary() {
     if (!user) return;
 
     const diaryKey = `diary_contents_${user.uid}`;
-    const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
-    setText(diaries[date] || "");
+    const diariesByDate = JSON.parse(localStorage.getItem(diaryKey)) || {};
+    setText(diariesByDate[date] || "");
 
     const todoKey = `todo_${user.uid}`;
     const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
