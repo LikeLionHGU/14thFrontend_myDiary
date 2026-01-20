@@ -5,17 +5,27 @@ import { auth } from "../firebase";
 
 function Diary() {
   const { date } = useParams();
-  const [text, setText] = useState("");
-  const navigate = useNavigate();
 
+  const [todoInput, setTodoInput] = useState("");
+  const [todos, setTodos] = useState([]);
+
+  const [text, setText] = useState("");
+
+  const navigate = useNavigate();
   const user = auth.currentUser;
 
   useEffect(() => {
     if (!user) return;
 
-    const userKey = `diary_contents_${user.uid}`;
-    const diaries = JSON.parse(localStorage.getItem(userKey)) || {};
+    // ✅ Diary load
+    const diaryKey = `diary_contents_${user.uid}`;
+    const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
     setText(diaries[date] || "");
+
+    // ✅ Todo load (user별 + date별)
+    const todoKey = `todo_${user.uid}`;
+    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
+    setTodos(todoByDate[date] || []);
   }, [date, user]);
 
   const saveDiary = () => {
@@ -24,12 +34,62 @@ function Diary() {
       return;
     }
 
-    const userKey = `diary_contents_${user.uid}`;
-    const diaries = JSON.parse(localStorage.getItem(userKey)) || {};
+    const diaryKey = `diary_contents_${user.uid}`;
+    const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
     diaries[date] = text;
-    localStorage.setItem(userKey, JSON.stringify(diaries));
+    localStorage.setItem(diaryKey, JSON.stringify(diaries));
 
     alert("저장되었습니다!");
+  };
+
+  // ✅ Todo 저장 helper
+  const saveTodos = (nextTodos) => {
+    if (!user) return;
+
+    const todoKey = `todo_${user.uid}`;
+    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
+    todoByDate[date] = nextTodos;
+    localStorage.setItem(todoKey, JSON.stringify(todoByDate));
+  };
+
+  // ✅ Todo 추가
+  const addTodo = () => {
+    if (!user) {
+      alert("로그인이 필요합니다!");
+      return;
+    }
+
+    const value = todoInput.trim();
+    if (!value) return;
+
+    const newTodo = {
+      id: Date.now(),
+      text: value,
+      done: false,
+    };
+
+    const nextTodos = [...todos, newTodo];
+    setTodos(nextTodos);
+    saveTodos(nextTodos);
+    setTodoInput("");
+  };
+
+  const onTodoKeyDown = (e) => {
+    if (e.key === "Enter") addTodo();
+  };
+
+  const toggleTodo = (id) => {
+    const nextTodos = todos.map((t) =>
+      t.id === id ? { ...t, done: !t.done } : t
+    );
+    setTodos(nextTodos);
+    saveTodos(nextTodos);
+  };
+
+  const deleteTodo = (id) => {
+    const nextTodos = todos.filter((t) => t.id !== id);
+    setTodos(nextTodos);
+    saveTodos(nextTodos);
   };
 
   const navigateToHome = () => {
@@ -40,9 +100,46 @@ function Diary() {
     <div className="diary-wrapper">
       <h2 className="diary-date">{date}</h2>
 
-      <div className="memo-card">
-        <div className="memo-header">
+      <div className="todo-card">
+        <div className="todo-title">To Do</div>
+
+        <div className="todo-input-row">
+          <input
+            className="todo-input"
+            value={todoInput}
+            onChange={(e) => setTodoInput(e.target.value)}
+            onKeyDown={onTodoKeyDown}
+            placeholder="할 일을 입력하고 Enter"
+          />
+          <button className="todo-add-btn" onClick={addTodo}>
+            추가
+          </button>
         </div>
+
+        <ul className="todo-list">
+          {todos.map((t) => (
+            <li key={t.id} className="todo-item">
+              <label className="todo-left">
+                <input
+                  type="checkbox"
+                  checked={t.done}
+                  onChange={() => toggleTodo(t.id)}
+                />
+                <span className={t.done ? "todo-text done" : "todo-text"}>
+                  {t.text}
+                </span>
+              </label>
+
+              <button className="todo-del-btn" onClick={() => deleteTodo(t.id)}>
+                삭제
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="memo-card">
+        <div className="memo-header"></div>
 
         <textarea
           className="memo-textarea"
