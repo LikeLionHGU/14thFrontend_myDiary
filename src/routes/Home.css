@@ -5,16 +5,95 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-color: #E2DED1;
+    margin: 0;
 }
 
 .calendar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #F1EFE8;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  width: auto;
+  max-width: 450px;
+}
+
+.react-calendar {
+  background-color: transparent !important;
+  border: none !important;
+  font-family: "Gowun Batang", serif;
+  width: 350px !important;
+}
+
+.react-calendar__navigation {
+  margin-bottom: 20px;
+}
+
+.react-calendar__navigation button {
+  font-family: "Edu SA Hand", cursive;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.react-calendar__month-view__weekdays {
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #333;
+
+  abbr {
+    text-decoration: none;
+  }
+}
+
+.react-calendar__tile {
+  padding: 15px 0;
+  font-family: "Gowun Batang", serif;
+  font-weight: 500;
+}
+
+.react-calendar__tile--active,
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: black !important;
+  color: #F1EFE8 !important;
+  border-radius: 50%;
+}
+
+.react-calendar__tile--now {
+  background: transparent;
+  color: black;
+  border: 1px solid black !important;
+  border-radius: 50%;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: #e6e6e6;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #dcdcdc;
+  border-radius: 50%;
 }
 
 .react-calendar__month-view__days__day--neighboringMonth {
-  color: #757575;
+  color: #b0b0b0 !important;
 }
 
 .react-calendar__month-view__days__day--weekend:not(.react-calendar__month-view__days__day--neighboringMonth) {
@@ -22,5 +101,42 @@
 }
 
 .react-calendar__month-view__days__day:not(.react-calendar__month-view__days__day--neighboringMonth):nth-child(7n + 1) {
-  color: #d10000;
+  color: #d10000 !important;
+}
+
+.dot {
+  height: 6px;
+  width: 6px;
+  background-color: #ff6b6b;
+  border-radius: 50%;
+  margin: 2px auto 0;
+  display: block;
+}
+
+.react-calendar__tile--active .dot {
+  background-color: #ffffff;
+}
+
+.dot-container {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 2px;
+  height: 6px;
+}
+
+.todo-dot {
+  background-color: #5c7cfa;
+}
+
+.diary-dot {
+  background-color: #ff6b6b;
+}
+
+.react-calendar__tile--active .todo-dot {
+  background-color: #a5d8ff;
+}
+
+.react-calendar__tile--active .diary-dot {
+  background-color: #ffc9c9;
 }
