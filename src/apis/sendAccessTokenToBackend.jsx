@@ -3,7 +3,7 @@ import axios from "axios";
 const sendAccessTokenToBackend = async (code) => {
   try {    
       const response = await axios.post(
-      `${process.env.REACT_APP_HOST_URL}/Login`,
+      `${process.env.REACT_APP_HOST_URL}/auth/google`,
       { code },
       {headers: {"Content-Type": "application/json"}}
     );
