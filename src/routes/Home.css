@@ -134,9 +134,9 @@
 }
 
 .react-calendar__tile--active .todo-dot {
-  background-color: #a5d8ff;
+  background-color: #5c7cfa;
 }
 
 .react-calendar__tile--active .diary-dot {
-  background-color: #ffc9c9;
+  background-color: #ff6b6b;
 }
