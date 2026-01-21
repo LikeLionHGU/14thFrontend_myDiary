@@ -12,6 +12,11 @@ function Diary() {
   const [text, setText] = useState("");
   const [thankText, setThankText] = useState("");
 
+  // 감쓰 기능에 필요
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
+  const [trashText, setTrashText] = useState("");
+  const [isThrowing, setIsThrowing] = useState(false);
+
   const navigate = useNavigate();
   const user = auth.currentUser;
 
@@ -108,6 +113,20 @@ function Diary() {
     navigate("/Home");
   };
 
+  // 감쓰 핸들러 (애니메이션)
+  const handleThrowTrash = () => {
+    if (!trashText.trim()) return;
+
+    setIsThrowing(true);
+
+    setTimeout(() => {
+      setIsTrashOpen(false);
+      setTrashText("");
+      setIsThrowing(false);
+      alert("나쁜 감정 버리기 성공!");
+    }, 1200); // 1.2초 뒤 초기화인데, 시간 바꿔도 됨
+  };
+
   return (
     <div className="diary-wrapper">
       <h2 className="diary-date">{date}</h2>
@@ -170,8 +189,41 @@ function Diary() {
 
       <div className="diary-buttons">
         <button onClick={saveDiary}>저장하기</button>
+        <button className="trash-open-btn" onClick={() => setIsTrashOpen(true)}>
+          🗑️ 감정 쓰레기통
+        </button>
         <button onClick={navigateToHome}>홈으로</button>
       </div>
+
+      {isTrashOpen && (
+        <div className="trash-overlay">
+          <div className={`trash-card ${isThrowing ? "crumple-animation" : ""}`}>
+            <div className="trash-header">
+              <h3>감정 쓰레기통</h3>
+              {!isThrowing && (
+                <button className="close-btn" onClick={() => setIsTrashOpen(false)}>
+                  ✕
+                </button>
+              )}
+            </div>
+            <textarea
+              className="trash-textarea"
+              placeholder="저장되지 않으니 편하게 작성하세요!"
+              value={trashText}
+              onChange={(e) => setTrashText(e.target.value)}
+              disabled={isThrowing}
+            />
+            <button
+              className="throw-btn"
+              onClick={handleThrowTrash}
+              disabled={isThrowing}
+            >
+              쓰레기통에 버리기
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
