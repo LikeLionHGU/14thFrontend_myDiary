@@ -43,6 +43,8 @@ function Diary() {
     const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
     thankByDate[date] = thankText;
     localStorage.setItem(thankKey, JSON.stringify(thankByDate));
+
+    navigate("/Home");
   };
 
   const saveDiary = () => {
@@ -59,6 +61,7 @@ function Diary() {
     saveThank();
 
     alert("저장되었습니다!");
+    navigate("/Home");
   };
 
   const saveTodos = (nextTodos) => {
