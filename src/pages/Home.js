@@ -3,67 +3,59 @@ import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
 import { useNavigate } from "react-router-dom";
 import "../styles/Home.css";
+import { getHome } from "../apis/home";
 
 function Home() {
   const [date, setDate] = useState(new Date());
   const [marks, setMarks] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
 
-  const makeKeyDate = (date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
+  const makeKeyDate = (dateObj) => {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const d = String(dateObj.getDate()).padStart(2, "0");
     return `${y}-${m}-${d}`;
   };
 
-  const getUserKey = () => {
-    const memberId = localStorage.getItem("memberId");
-    if (memberId) return `member_${memberId}`;
-
-    const userInfoRaw = localStorage.getItem("userInfo");
-    if (!userInfoRaw) return null;
-
-    try {
-      const userInfo = JSON.parse(userInfoRaw);
-      if (userInfo?.email) return `email_${userInfo.email}`;
-      return null;
-    } catch {
-      return null;
-    }
-  };
-
   useEffect(() => {
-    const userKey = getUserKey();
-    if (!userKey) {
+    const userEmail = localStorage.getItem("userEmail");
+    if (!userEmail) {
       navigate("/Login");
       return;
     }
 
-    const diaryKey = `diary_contents_${userKey}`;
-    const todoKey = `todo_${userKey}`;
-    const thankKey = `thank_${userKey}`;
+    const run = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getHome();
 
-    const diaryData = JSON.parse(localStorage.getItem(diaryKey)) || {};
-    const todoData = JSON.parse(localStorage.getItem(todoKey)) || {};
-    const thankData = JSON.parse(localStorage.getItem(thankKey)) || {};
+        const haveContents = Array.isArray(data?.haveContents) ? data.haveContents : [];
+        const haveTodos = Array.isArray(data?.haveTodos) ? data.haveTodos : [];
 
-    const newMarks = {};
-    const allDates = new Set([
-      ...Object.keys(diaryData),
-      ...Object.keys(todoData),
-      ...Object.keys(thankData),
-    ]);
+        const nextMarks = {};
 
-    allDates.forEach((dateKey) => {
-      const hasTodo = Array.isArray(todoData[dateKey]) && todoData[dateKey].length > 0;
-      const hasDiary =
-        (typeof diaryData[dateKey] === "string" && diaryData[dateKey].trim() !== "") ||
-        (typeof thankData[dateKey] === "string" && thankData[dateKey].trim() !== "");
+        haveContents.forEach((dateKey) => {
+          if (!nextMarks[dateKey]) nextMarks[dateKey] = { hasTodo: false, hasDiary: false };
+          nextMarks[dateKey].hasDiary = true;
+        });
 
-      if (hasTodo || hasDiary) newMarks[dateKey] = { hasTodo, hasDiary };
-    });
+        haveTodos.forEach((dateKey) => {
+          if (!nextMarks[dateKey]) nextMarks[dateKey] = { hasTodo: false, hasDiary: false };
+          nextMarks[dateKey].hasTodo = true;
+        });
 
-    setMarks(newMarks);
+        setMarks(nextMarks);
+      } catch (err) {
+        console.error(err);
+        alert("달력 데이터를 불러오지 못했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    run();
   }, [navigate]);
 
   const tileContent = ({ date, view }) => {
@@ -71,7 +63,6 @@ function Home() {
 
     const dateString = makeKeyDate(date);
     const mark = marks[dateString];
-
     if (!mark) return null;
 
     return (
@@ -85,13 +76,19 @@ function Home() {
   return (
     <div className="home">
       <div className="calendar-container">
-        <Calendar
-          calendarType="hebrew"
-          onChange={setDate}
-          value={date}
-          tileContent={tileContent}
-          onClickDay={(clickedDate) => navigate(`/diary/${makeKeyDate(clickedDate)}`)}
-        />
+        {isLoading ? (
+          <div style={{ padding: 12 }}>불러오는 중...</div>
+        ) : (
+          <Calendar
+            calendarType="hebrew"
+            onChange={setDate}
+            value={date}
+            tileContent={tileContent}
+            onClickDay={(clickedDate) =>
+              navigate(`/diary/${makeKeyDate(clickedDate)}`)
+            }
+          />
+        )}
       </div>
     </div>
   );
