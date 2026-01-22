@@ -1,14 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./StartPage.css";
-import GoogleLoginBtnImg from "./asset/GoogleLoginBtn.svg";
+import "../styles/StartPage.css";
+import GoogleLoginBtnImg from "../asset/GoogleLoginBtn.svg";
 
 function StartPage() {
     const navigate = useNavigate();
 
     const handleGoogleLogin = () => {
-        const client_id = process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID;
-        const redirect_uri = process.env.REACT_APP_GOOGLE_AUTH_REDIRECT_URI;
 
         window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_GOOGLE_AUTH_REDIRECT_URI}&response_type=code&scope=email profile`
     };
