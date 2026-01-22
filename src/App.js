@@ -4,11 +4,11 @@ import {
   Routes,
   Route
 } from "react-router-dom";
-import Home from "./routes/Home";
-import Diary from "./routes/Diary";
-import StartPage from "./routes/StartPage";
-import Login from "./components/Login";
-import SignUp from "./routes/SignUp";
+import Home from "./pages/Home";
+import Diary from "./pages/Diary";
+import StartPage from "./pages/StartPage";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import Loading from "./components/loading";
 
 
