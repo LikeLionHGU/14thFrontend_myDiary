@@ -32,6 +32,10 @@ const sendAccessTokenToBackend = async (code) => {
 
     if (userInfo.name || userInfo.email || userInfo.message) {
       localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+      if (userInfo.email) {
+        localStorage.setItem("userEmail", userInfo.email);
+      }
       console.log("사용자 정보 저장 완료!");
     }
 
