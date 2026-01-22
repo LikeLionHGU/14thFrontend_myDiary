@@ -1,3 +1,4 @@
+// components/Loading.jsx
 import React, { useEffect } from "react";
 import sendAccessTokenToBackend from "../apis/sendAccessTokenToBackend";
 import styled from "styled-components";
@@ -9,30 +10,36 @@ const Loading = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // URL에서 authorization code 추출
         const parsedQuery = new URLSearchParams(window.location.search);
         const code = parsedQuery.get("code");
 
-        console.log("Authorization code:", code);
-
-        // code가 없으면 에러 처리
         if (!code) {
-          console.error("Authorization code가 URL에 없습니다.");
           alert("로그인에 실패했습니다. 다시 시도해주세요.");
           navigate("/");
           return;
         }
 
-        // 백엔드로 authorization code 전송
-        await sendAccessTokenToBackend(code);
-        
-        // 성공 시 테스트 페이지로 이동
+        const data = await sendAccessTokenToBackend(code);
+
+        if (data?.memberId) {
+          localStorage.setItem("memberId", String(data.memberId));
+        }
+
+        if (data?.email) {
+          localStorage.setItem("userInfo", JSON.stringify({ email: data.email }));
+        } else {
+          // email이 안 오더라도 기존 userInfo가 있으면 유지
+          const existing = localStorage.getItem("userInfo");
+          if (!existing) {
+            alert("로그인 정보(email)가 없어 로그인에 실패했습니다. 다시 시도해주세요.");
+            navigate("/");
+            return;
+          }
+        }
+
         navigate("/Home");
-        
       } catch (error) {
         console.error("로그인 과정에서 에러가 발생했습니다.", error);
-        
-        // 실패 시 사용자에게 알림 후 로그인 페이지로 이동
         alert("로그인에 실패했습니다. 다시 시도해주세요.");
         navigate("/");
       }

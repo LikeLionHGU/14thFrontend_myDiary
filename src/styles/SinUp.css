@@ -1,0 +1,110 @@
+.SignUppage-background {
+    height: 100vh;
+    /*화면전체 높이*/
+    display: flex;
+    justify-content: center;
+    /*가로 중앙*/
+    align-items: center;
+    /*세로 중앙*/
+    background-color: #E2DED1;
+    margin: 0;
+}
+
+.SignUp-card {
+    background-color: #F1EFE8;
+    padding: 60px 40px;
+    border-radius: 24px;
+    text-align: center;
+
+    width: 100%;
+    max-width: 400px;
+    max-height: 480px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.signup-title {
+    font-size: 3rem;
+    font-family: "Edu SA Hand", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
+    margin-bottom: 50px;
+}
+
+.input-group {
+    font-family: "Gowun Batang", serif;
+    font-weight: 400;
+    font-style: normal;
+    margin-bottom: 30px;
+}
+
+.id-input {
+    background-color: transparent;
+    color: black;
+    border: 1px solid black;
+    border-radius: 50px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.name-input {
+    background-color: transparent;
+    color: black;
+    border: 1px solid black;
+    border-radius: 50px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.pw-input {
+    background-color: transparent;
+    color: black;
+    border: 1px solid black;
+    border-radius: 50px;
+    margin-left: 10px;
+}
+
+.subtn {
+    font-family: "Gowun Batang", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.signup-btn {
+    background-color: black;
+    color: #F1EFE8;
+    border: 2px solid black;
+    margin-right: 10px;
+    border-radius: 50px;
+}
+
+.signup-btn:hover {
+    background-color: #333333;
+    border-color: #333333;
+}
+
+.login-btn {
+    background-color: transparent;
+    color: black;
+    border: 2px solid black;
+    margin-right: 10px;
+    border-radius: 50px;
+}
+
+.login-btn:hover {
+    background-color: black;
+    color: #F1EFE8;
+}
+
+.home-btn {
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "./Diary.css";
-import { auth } from "../firebase";
+import "../styles/Diary.css";
 
 function Diary() {
   const { date } = useParams();
@@ -12,48 +11,73 @@ function Diary() {
   const [text, setText] = useState("");
   const [thankText, setThankText] = useState("");
 
-  // 감쓰 기능에 필요
   const [isTrashOpen, setIsTrashOpen] = useState(false);
   const [trashText, setTrashText] = useState("");
   const [isThrowing, setIsThrowing] = useState(false);
 
   const navigate = useNavigate();
-  const user = auth.currentUser;
 
-  useEffect(() => {
-    if (!user) return;
+  const getUserKey = () => {
+    const memberId = localStorage.getItem("memberId");
+    if (memberId) return `member_${memberId}`;
 
-    const diaryKey = `diary_contents_${user.uid}`;
-    const diariesByDate = JSON.parse(localStorage.getItem(diaryKey)) || {};
-    setText(diariesByDate[date] || "");
+    const userInfoRaw = localStorage.getItem("userInfo");
+    if (!userInfoRaw) return null;
 
-    const todoKey = `todo_${user.uid}`;
-    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
-    setTodos(todoByDate[date] || []);
-
-    const thankKey = `thank_${user.uid}`;
-    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
-    setThankText(thankByDate[date] || "");
-  }, [date, user]);
-
-  const saveThank = () => {
-    if (!user) return;
-
-    const thankKey = `thank_${user.uid}`;
-    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
-    thankByDate[date] = thankText;
-    localStorage.setItem(thankKey, JSON.stringify(thankByDate));
-
-    navigate("/Home");
+    try {
+      const userInfo = JSON.parse(userInfoRaw);
+      if (userInfo?.email) return `email_${userInfo.email}`;
+      return null;
+    } catch {
+      return null;
+    }
   };
 
-  const saveDiary = () => {
-    if (!user) {
-      alert("로그인이 필요합니다!");
+  const userKey = getUserKey();
+
+  useEffect(() => {
+    if (!date) {
+      navigate("/Home");
       return;
     }
 
-    const diaryKey = `diary_contents_${user.uid}`;
+    if (!userKey) {
+      alert("로그인이 필요합니다!");
+      navigate("/Login");
+      return;
+    }
+
+    const diaryKey = `diary_contents_${userKey}`;
+    const todoKey = `todo_${userKey}`;
+    const thankKey = `thank_${userKey}`;
+
+    const diariesByDate = JSON.parse(localStorage.getItem(diaryKey)) || {};
+    setText(diariesByDate[date] || "");
+
+    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
+    setTodos(todoByDate[date] || []);
+
+    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
+    setThankText(thankByDate[date] || "");
+  }, [date, navigate, userKey]);
+
+  const saveThank = () => {
+    if (!userKey) return;
+
+    const thankKey = `thank_${userKey}`;
+    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
+    thankByDate[date] = thankText;
+    localStorage.setItem(thankKey, JSON.stringify(thankByDate));
+  };
+
+  const saveDiary = () => {
+    if (!userKey) {
+      alert("로그인이 필요합니다!");
+      navigate("/Login");
+      return;
+    }
+
+    const diaryKey = `diary_contents_${userKey}`;
     const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
     diaries[date] = text;
     localStorage.setItem(diaryKey, JSON.stringify(diaries));
@@ -65,17 +89,18 @@ function Diary() {
   };
 
   const saveTodos = (nextTodos) => {
-    if (!user) return;
+    if (!userKey) return;
 
-    const todoKey = `todo_${user.uid}`;
+    const todoKey = `todo_${userKey}`;
     const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
     todoByDate[date] = nextTodos;
     localStorage.setItem(todoKey, JSON.stringify(todoByDate));
   };
 
   const addTodo = () => {
-    if (!user) {
+    if (!userKey) {
       alert("로그인이 필요합니다!");
+      navigate("/Login");
       return;
     }
 
@@ -112,11 +137,6 @@ function Diary() {
     saveTodos(nextTodos);
   };
 
-  const navigateToHome = () => {
-    navigate("/Home");
-  };
-
-  // 감쓰 핸들러 (애니메이션)
   const handleThrowTrash = () => {
     if (!trashText.trim()) return;
 
@@ -127,7 +147,7 @@ function Diary() {
       setTrashText("");
       setIsThrowing(false);
       alert("나쁜 감정 버리기 성공!");
-    }, 1200); // 1.2초 뒤 초기화인데, 시간 바꿔도 됨
+    }, 1200);
   };
 
   return (
@@ -195,7 +215,7 @@ function Diary() {
         <button className="trash-open-btn" onClick={() => setIsTrashOpen(true)}>
           🗑️ 감정 쓰레기통
         </button>
-        <button onClick={navigateToHome}>홈으로</button>
+        <button onClick={() => navigate("/Home")}>홈으로</button>
       </div>
 
       {isTrashOpen && (
@@ -226,7 +246,6 @@ function Diary() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
