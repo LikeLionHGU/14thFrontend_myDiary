@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { auth } from "./firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+//import { auth } from "./firebase";
+//import { createUserWithEmailAndPassword } from "firebase/auth";
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import "./SinUp.css";
 
-function SignUp() {
+/*function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -20,12 +21,43 @@ function SignUp() {
             console.log("error", error.message);
             alert("회원가입 실패: " + error.message);
         }
+    }; */
+
+const SignUp =() => {
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+
+    const handleSignUp = async(e) => {
+        e.preventDefault();
+
+        if(!email || !password || !name) {
+            alert("모든 항목을 입력해주세요");
+            return;
+        }
+
+        try{
+            const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/SignUp`,{
+                email: email,
+                name: name,
+                password: password
+            });
+
+            console.log('회원가입 성공:',response.data);
+            alert('회원가입이 완료되었습니다!');
+            navigate('/Login');
+        } catch(error) {
+            console.log('회원가입 실패: ', error);
+            alert('회원가입에 실패했습니다. 다시 시도해주세요');
+        }
     };
 
     return (
         <div className="SignUppage-background">
             <div className="SignUp-card">
-                <form>
+                <form onSubmit={handleSignUp}>
                     <h1 className="signup-title">SignUp</h1>
 
                     <div className="input-group">
@@ -33,13 +65,18 @@ function SignUp() {
                             아이디
                             <input className="id-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
+
+                        <div className="name">
+                            이름 <input className="name-input" type="text" value={name} onChange={(e)=>setName(e.target.value)} />
+                        </div>
+
                         <div className="pw">
                             비밀번호
                             <input className="pw-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
                     </div>
 
-                    <button className="subtn signup-btn" onClick={handleSignUp}>회원가입하기</button>
+                    <button className="subtn signup-btn">회원가입하기</button>
 
                     <button className="subtn login-btn" type="button" onClick={() => navigate("/Login")}>로그인하러 가기</button>
 
@@ -50,6 +87,6 @@ function SignUp() {
             </div>
         </div>
     );
-}
-
+};
+  
 export default SignUp;
