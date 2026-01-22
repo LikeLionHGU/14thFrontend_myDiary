@@ -27,14 +27,14 @@ const Loading = () => {
         await sendAccessTokenToBackend(code);
         
         // 성공 시 테스트 페이지로 이동
-        navigate("/test");
+        navigate("/Home");
         
       } catch (error) {
         console.error("로그인 과정에서 에러가 발생했습니다.", error);
         
         // 실패 시 사용자에게 알림 후 로그인 페이지로 이동
         alert("로그인에 실패했습니다. 다시 시도해주세요.");
-        navigate("/test");
+        navigate("/");
       }
     };
 
