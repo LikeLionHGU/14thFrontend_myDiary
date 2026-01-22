@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Diary.css";
+import {
+  getDiaryByDate,
+  createDiaryByDate,
+  updateDiaryByDate,
+} from "../apis/diary";
 
 function Diary() {
   const { date } = useParams();
+  const navigate = useNavigate();
+
+  const userEmail = localStorage.getItem("userEmail");
 
   const [todoInput, setTodoInput] = useState("");
   const [todos, setTodos] = useState([]);
-
   const [text, setText] = useState("");
   const [thankText, setThankText] = useState("");
 
@@ -15,90 +22,70 @@ function Diary() {
   const [trashText, setTrashText] = useState("");
   const [isThrowing, setIsThrowing] = useState(false);
 
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const getUserKey = () => {
-    const memberId = localStorage.getItem("memberId");
-    if (memberId) return `member_${memberId}`;
+  const [hasServerData, setHasServerData] = useState(false);
 
-    const userInfoRaw = localStorage.getItem("userInfo");
-    if (!userInfoRaw) return null;
-
-    try {
-      const userInfo = JSON.parse(userInfoRaw);
-      if (userInfo?.email) return `email_${userInfo.email}`;
-      return null;
-    } catch {
-      return null;
-    }
+  const serverTodoToUI = (arr) => {
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter((t) => typeof t === "string")
+      .map((t) => ({
+        id: `${Date.now()}_${Math.random()}`,
+        text: t,
+        done: false,
+      }));
   };
 
-  const userKey = getUserKey();
+  const uiTodoToServer = (arr) => {
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .map((t) => (t?.text || "").trim())
+      .filter(Boolean);
+  };
 
   useEffect(() => {
-    if (!date) {
-      navigate("/Home");
-      return;
-    }
+    const run = async () => {
+      if (!date) {
+        navigate("/Home");
+        return;
+      }
 
-    if (!userKey) {
-      alert("로그인이 필요합니다!");
-      navigate("/Login");
-      return;
-    }
+      if (!userEmail) {
+        alert("로그인이 필요합니다!");
+        navigate("/Login");
+        return;
+      }
 
-    const diaryKey = `diary_contents_${userKey}`;
-    const todoKey = `todo_${userKey}`;
-    const thankKey = `thank_${userKey}`;
+      setIsLoading(true);
 
-    const diariesByDate = JSON.parse(localStorage.getItem(diaryKey)) || {};
-    setText(diariesByDate[date] || "");
+      try {
+        const data = await getDiaryByDate(date);
 
-    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
-    setTodos(todoByDate[date] || []);
+        const hasAny =
+          (Array.isArray(data?.todo) && data.todo.length > 0) ||
+          (data?.contents && data.contents.trim() !== "") ||
+          (data?.thanks && data.thanks.trim() !== "");
 
-    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
-    setThankText(thankByDate[date] || "");
-  }, [date, navigate, userKey]);
+        setHasServerData(hasAny);
 
-  const saveThank = () => {
-    if (!userKey) return;
+        setTodos(serverTodoToUI(data?.todo));
+        setText(data?.contents || "");
+        setThankText(data?.thanks || "");
+      } catch (err) {
+        console.error(err);
+        alert("다이어리를 불러오지 못했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    const thankKey = `thank_${userKey}`;
-    const thankByDate = JSON.parse(localStorage.getItem(thankKey)) || {};
-    thankByDate[date] = thankText;
-    localStorage.setItem(thankKey, JSON.stringify(thankByDate));
-  };
-
-  const saveDiary = () => {
-    if (!userKey) {
-      alert("로그인이 필요합니다!");
-      navigate("/Login");
-      return;
-    }
-
-    const diaryKey = `diary_contents_${userKey}`;
-    const diaries = JSON.parse(localStorage.getItem(diaryKey)) || {};
-    diaries[date] = text;
-    localStorage.setItem(diaryKey, JSON.stringify(diaries));
-
-    saveThank();
-
-    alert("저장되었습니다!");
-    navigate("/Home");
-  };
-
-  const saveTodos = (nextTodos) => {
-    if (!userKey) return;
-
-    const todoKey = `todo_${userKey}`;
-    const todoByDate = JSON.parse(localStorage.getItem(todoKey)) || {};
-    todoByDate[date] = nextTodos;
-    localStorage.setItem(todoKey, JSON.stringify(todoByDate));
-  };
+    run();
+  }, [date, navigate, userEmail]);
 
   const addTodo = () => {
-    if (!userKey) {
+    if (!userEmail) {
       alert("로그인이 필요합니다!");
       navigate("/Login");
       return;
@@ -113,28 +100,53 @@ function Diary() {
       done: false,
     };
 
-    const nextTodos = [...todos, newTodo];
-    setTodos(nextTodos);
-    saveTodos(nextTodos);
+    setTodos((prev) => [...prev, newTodo]);
     setTodoInput("");
   };
 
-  const onTodoKeyDown = (e) => {
-    if (e.key === "Enter") addTodo();
-  };
-
   const toggleTodo = (id) => {
-    const nextTodos = todos.map((t) =>
-      t.id === id ? { ...t, done: !t.done } : t
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
     );
-    setTodos(nextTodos);
-    saveTodos(nextTodos);
   };
 
   const deleteTodo = (id) => {
-    const nextTodos = todos.filter((t) => t.id !== id);
-    setTodos(nextTodos);
-    saveTodos(nextTodos);
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const saveDiary = async () => {
+    if (!userEmail) {
+      alert("로그인이 필요합니다!");
+      navigate("/Login");
+      return;
+    }
+
+    if (!date) return;
+
+    const payload = {
+      todo: uiTodoToServer(todos),
+      contents: text,
+      thanks: thankText,
+    };
+
+    setIsSaving(true);
+
+    try {
+      if (hasServerData) {
+        await updateDiaryByDate(date, payload);
+      } else {
+        await createDiaryByDate(date, payload);
+        setHasServerData(true);
+      }
+
+      alert("저장되었습니다!");
+      navigate("/Home");
+    } catch (err) {
+      console.error(err);
+      alert("저장에 실패했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleThrowTrash = () => {
@@ -150,6 +162,15 @@ function Diary() {
     }, 1200);
   };
 
+  if (isLoading) {
+    return (
+      <div className="diary-wrapper">
+        <h2 className="diary-date">{date}</h2>
+        <p>불러오는 중...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="diary-wrapper">
       <h2 className="diary-date">{date}</h2>
@@ -162,8 +183,7 @@ function Diary() {
             className="todo-input"
             value={todoInput}
             onChange={(e) => setTodoInput(e.target.value)}
-            onKeyDown={onTodoKeyDown}
-            placeholder="할 일을 입력하고 Enter"
+            placeholder="할 일을 입력하세요"
           />
           <button className="todo-add-btn" onClick={addTodo}>
             추가
@@ -211,7 +231,9 @@ function Diary() {
       </div>
 
       <div className="diary-buttons">
-        <button onClick={saveDiary}>저장하기</button>
+        <button onClick={saveDiary} disabled={isSaving}>
+          {isSaving ? "저장 중..." : "저장하기"}
+        </button>
         <button className="trash-open-btn" onClick={() => setIsTrashOpen(true)}>
           🗑️ 감정 쓰레기통
         </button>
@@ -224,7 +246,10 @@ function Diary() {
             <div className="trash-header">
               <h3>감정 쓰레기통</h3>
               {!isThrowing && (
-                <button className="close-btn" onClick={() => setIsTrashOpen(false)}>
+                <button
+                  className="close-btn"
+                  onClick={() => setIsTrashOpen(false)}
+                >
                   ✕
                 </button>
               )}
