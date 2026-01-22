@@ -3,7 +3,7 @@ import React, { useState } from "react";
 //import { createUserWithEmailAndPassword } from "firebase/auth";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import "./SinUp.css";
+import "../styles/SinUp.css";
 
 /*function SignUp() {
     const [email, setEmail] = useState("");

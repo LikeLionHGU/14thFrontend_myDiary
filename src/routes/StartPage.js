@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./StartPage.css";
-import GoogleLoginBtnImg from "./asset/GoogleLoginBtn.svg";
+import "../styles/StartPage.css";
+import GoogleLoginBtnImg from "../asset/GoogleLoginBtn.svg";
 
 function StartPage() {
     const navigate = useNavigate();

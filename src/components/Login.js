@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { auth } from "./firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import "../styles/Login.css";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -12,36 +11,55 @@ function Login() {
     const handleLogin = async (event) => {
         event.preventDefault();
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            alert("로그인 성공!");
-            navigate("/Home");
-        } catch (error) {
-            console.log("로그인 실패", error.message);
-            alert("로그인 실패.. 아이디/비번을 확인하세요");
+        if (!email || !password){
+            alert("아이디와 비밀번호를 모두 입력해주세요");
+            return;
         }
-    };
 
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/Login`,{
+                email: email,
+                password: password
+            });
+
+            console.log("로그인 응답:",response.data);
+
+            if(response.data.isLogined === 1){
+                alert(response.data.message);
+
+                localStorage.setItem("accessToken", "dummy-token"); //가짜 토큰?... 
+                localStorage.setItem("userInfo", JSON.stringify({email: email}));
+
+                navigate("/Home");
+            } else{
+                alert("로그인 실패: 아이디 또는 비밀번호를 확인하세요");
+            } 
+        }catch(error){
+                console.log("로그인 에러:", error);
+                alert("서버 통신 중 오류 발생");
+            }
+    };
+    
     return (
         <div className="LoginPage-background">
             <div className="Login-card">
-                <form>
+                <form onSubmit={handleLogin}>
                     <h1 className="login-title">LogIn</h1>
 
                     <div className="input-group">
                         <div className="id">
                             아이디
-                            <input className="id-input" type="email" onChange={(e) => setEmail(e.target.value)} />
+                            <input className="id-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
 
                         <div className="pw">
                             비밀번호
-                            <input className="pw-input" type="password" onChange={(e) => setPassword(e.target.value)} />
+                            <input className="pw-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         </div>
 
                     </div>
 
-                    <button className="libtn lilogin-btn" onClick={handleLogin}>로그인하기</button>
+                    <button className="libtn lilogin-btn" type="submit">로그인하기</button>
 
                     <button className="libtn lisignup-btn" type="button" onClick={() => navigate("/SignUp")}>회원가입하러 가기</button>
 
