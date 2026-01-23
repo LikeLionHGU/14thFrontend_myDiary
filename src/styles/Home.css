@@ -61,9 +61,20 @@
 }
 
 .react-calendar__tile {
-  padding: 15px 0;
+  height: 80px !important;
+  width: 100% !important;
+
+  padding: 10px 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+
+  overflow: hidden;
   font-family: "Gowun Batang", serif;
   font-weight: 500;
+  position: relative;
 }
 
 .react-calendar__tile--active,
@@ -104,6 +115,7 @@
   color: #d10000 !important;
 }
 
+/*
 .dot {
   height: 6px;
   width: 6px;
@@ -111,7 +123,8 @@
   border-radius: 50%;
   margin: 2px auto 0;
   display: block;
-}
+} 
+*/
 
 .react-calendar__tile--active .dot {
   background-color: #ffffff;
@@ -120,9 +133,16 @@
 .dot-container {
   display: flex;
   justify-content: center;
-  gap: 3px;
-  margin-top: 2px;
+  gap: 4px;
+
+  height: 8px;
+  margin-bottom: 4px;
+}
+
+.dot {
   height: 6px;
+  width: 6px;
+  border-radius: 50%;
 }
 
 .todo-dot {
@@ -159,4 +179,44 @@
   color: #F1EFE8;
   border-color: black;
   transform: translateY(-2px);
+}
+
+.tile-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  margin-top: 5px;
+
+  flex: 1;
+  width: 100%;
+}
+
+.text-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 20px;
+  width: 100%;
+}
+
+.diary-label,
+.todo-label {
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.diary-label {
+  color: #d63031;
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+.todo-label {
+  color: #4a69bd;
+  background-color: rgba(92, 124, 250, 0.1);
 }
