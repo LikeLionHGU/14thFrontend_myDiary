@@ -48,8 +48,6 @@ function Home() {
 
         setMarks(nextMarks);
       } catch (err) {
-        console.error(err);
-        // alert("달력 데이터를 불러오지 못했습니다.");
         console.error("데이터 로드 실패:", err);
       } finally {
         setIsLoading(false);
@@ -60,13 +58,12 @@ function Home() {
   }, [navigate]);
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("로그아웃 ㄱ?");
+    const confirmLogout = window.confirm("정말 로그아웃 하시겠습니까?");
     if (confirmLogout) {
       localStorage.removeItem("userEmail");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("userInfo");
-
-      alert("로그아웃 완료!");
+      alert("로그아웃 되었습니다.");
       navigate("/Login");
     }
   };
@@ -76,12 +73,33 @@ function Home() {
 
     const dateString = makeKeyDate(date);
     const mark = marks[dateString];
+
     if (!mark) return null;
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(date);
+    targetDate.setHours(0, 0, 0, 0);
+
+    const isPast = targetDate < today;
+    const isFutureOrToday = targetDate >= today;
+
     return (
-      <div className="dot-container">
-        {mark.hasTodo && <div className="dot todo-dot"></div>}
-        {mark.hasDiary && <div className="dot diary-dot"></div>}
+      <div className="tile-content-wrapper">
+        <div className="dot-container">
+          {mark.hasTodo && <div className="dot todo-dot"></div>}
+          {mark.hasDiary && <div className="dot diary-dot"></div>}
+        </div>
+
+        <div className="text-label">
+          {isPast && mark.hasDiary && (
+            <span className="diary-label">추억</span>
+          )}
+
+          {isFutureOrToday && mark.hasTodo && (
+            <span className="todo-label">할일</span>
+          )}
+        </div>
       </div>
     );
   };
@@ -90,23 +108,22 @@ function Home() {
     <div className="home">
       <div className="calendar-container">
         {isLoading ? (
-          <div style={{ padding: 12 }}>불러오는 중...</div>
+          <div style={{ padding: 12, fontFamily: "Gowun Batang" }}>불러오는 중...</div>
         ) : (
-            <>
-              <Calendar
-                calendarType="hebrew"
-                onChange={setDate}
-                value={date}
-                tileContent={tileContent}
-                onClickDay={(clickedDate) =>
-                  navigate(`/diary/${makeKeyDate(clickedDate)}`)
-                }
-              />
-              
-              <button className="logout-btn" onClick={handleLogout}>
-                로그아웃
-              </button>
-            </>
+          <>
+            <Calendar
+              calendarType="hebrew"
+              onChange={setDate}
+              value={date}
+              tileContent={tileContent}
+              onClickDay={(clickedDate) =>
+                navigate(`/diary/${makeKeyDate(clickedDate)}`)
+              }
+            />
+            <button className="logout-btn" onClick={handleLogout}>
+              로그아웃
+            </button>
+          </>
         )}
       </div>
     </div>
