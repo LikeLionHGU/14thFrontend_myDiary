@@ -93,7 +93,7 @@ function Home() {
 
         <div className="text-label">
           {isPast && mark.hasDiary && (
-            <span className="diary-label">일정</span>
+            <span className="diary-label">추억</span>
           )}
 
           {isFutureOrToday && mark.hasTodo && (
