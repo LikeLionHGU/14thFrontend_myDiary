@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_HOST_URL,
+  // baseURL: process.env.REACT_APP_HOST_URL,
+  baseURL: "https://one4th-mydiary.onrender.com",
   headers: { "Content-Type": "application/json" },
 });
 
