@@ -50,6 +50,7 @@ function Home() {
       } catch (err) {
         console.error(err);
         alert("달력 데이터를 불러오지 못했습니다.");
+        console.error("데이터 로드 실패:", err);
       } finally {
         setIsLoading(false);
       }
