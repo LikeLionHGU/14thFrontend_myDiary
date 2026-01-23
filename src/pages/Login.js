@@ -28,15 +28,26 @@ function Login() {
                 alert(response.data.message);
 
                 localStorage.setItem("accessToken", "dummy-token"); //가짜 토큰?... 
-                localStorage.setItem("userInfo", JSON.stringify({email: email}));
+                localStorage.setItem("userInfo", JSON.stringify({ email: email }));
+                localStorage.setItem("userEmail", email);
 
                 navigate("/Home");
             } else{
                 alert("로그인 실패: 아이디 또는 비밀번호를 확인하세요");
             } 
         }catch(error){
-                console.log("로그인 에러:", error);
-                alert("서버 통신 중 오류 발생");
+            console.log("로그인 상세 에러:", error);
+
+            // 에러 메시지 추가했어요
+            if (error.response && error.response.status === 401) {
+                alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+            } else if (error.response && error.response.status === 404) {
+                alert("존재하지 않는 주소입니다. (백엔드 경로 확인 필요)");
+            } else if (error.code === "ERR_NETWORK") {
+                alert("서버가 꺼져있거나 네트워크 연결이 불안정합니다.");
+            } else {
+                alert("로그인 중 알 수 없는 오류가 발생했습니다.");
+            }
             }
     };
     
