@@ -82,14 +82,14 @@
 .react-calendar__tile--active:enabled:focus {
   background: black !important;
   color: #F1EFE8 !important;
-  border-radius: 50%;
+  border-radius: 10%;
 }
 
 .react-calendar__tile--now {
   background: transparent;
   color: black;
   border: 1px solid black !important;
-  border-radius: 50%;
+  border-radius: 10%;
 }
 
 .react-calendar__tile--now:enabled:hover,
@@ -100,7 +100,7 @@
 .react-calendar__tile:enabled:hover,
 .react-calendar__tile:enabled:focus {
   background-color: #dcdcdc;
-  border-radius: 50%;
+  border-radius: 10%;
 }
 
 .react-calendar__month-view__days__day--neighboringMonth {
