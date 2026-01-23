@@ -15,7 +15,7 @@ function StartPage() {
         <div className="startPage-background">
             <div className="start-card">
 
-                <h1 className="diary-title">DIARY</h1>
+                <h1 className="diary-title">Sharing Diary</h1>
 
                 <div className="start-button-group">
                     <button className="btn start-login-btn" onClick={() => navigate("/Login")}>Log in</button>
