@@ -58,7 +58,7 @@ function Home() {
   }, [navigate]);
 
   const handleLogout = () => {
-    const confirmLogout = window.confirm("정말 로그아웃 하시겠습니까?");
+    const confirmLogout = window.confirm("로그아웃 ㄱ?");
     if (confirmLogout) {
       localStorage.removeItem("userEmail");
       localStorage.removeItem("accessToken");
@@ -93,7 +93,7 @@ function Home() {
 
         <div className="text-label">
           {isPast && mark.hasDiary && (
-            <span className="diary-label">추억</span>
+            <span className="diary-label">일정</span>
           )}
 
           {isFutureOrToday && mark.hasTodo && (

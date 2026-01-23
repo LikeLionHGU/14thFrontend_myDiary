@@ -1,6 +1,11 @@
 import api from "./axios";
 
 export const getHome = async () => {
-  const { data } = await api.get("/Home");
+  const email = localStorage.getItem("userEmail");
+
+  const { data } = await api.get("/Home", {
+    params: { email: email }
+  });
+
   return data;
 };
