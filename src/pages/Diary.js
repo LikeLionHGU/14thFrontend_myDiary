@@ -46,20 +46,16 @@ function Diary() {
   };
 
   useEffect(() => {
-    const run = async () => {
-      if (!date) {
-        navigate("/Home");
-        return;
-      }
+    if (!date) { navigate("/Home"); return; }
 
-      if (!userEmail) {
-        alert("로그인이 필요합니다!");
-        navigate("/Login");
-        return;
-      }
+    if (!userEmail) {
+      alert("로그인이 필요합니다!");
+      navigate("/Login");
+      return;
+    }
 
+    const fetchData = async () => {
       setIsLoading(true);
-
       try {
         const data = await getDiaryByDate(date);
 
@@ -73,41 +69,28 @@ function Diary() {
         setTodos(serverTodoToUI(data?.todo));
         setText(data?.contents || "");
         setThankText(data?.thanks || "");
+
       } catch (err) {
-        console.error(err);
-        alert("다이어리를 불러오지 못했습니다.");
+        console.log("데이터 없음 (새 글 작성 모드)");
+        setHasServerData(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    run();
+    fetchData();
   }, [date, navigate, userEmail]);
 
   const addTodo = () => {
-    if (!userEmail) {
-      alert("로그인이 필요합니다!");
-      navigate("/Login");
-      return;
-    }
-
     const value = todoInput.trim();
     if (!value) return;
-
-    const newTodo = {
-      id: Date.now(),
-      text: value,
-      done: false,
-    };
-
+    const newTodo = { id: Date.now(), text: value, done: false };
     setTodos((prev) => [...prev, newTodo]);
     setTodoInput("");
   };
 
   const toggleTodo = (id) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-    );
+    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
   };
 
   const deleteTodo = (id) => {
@@ -115,21 +98,15 @@ function Diary() {
   };
 
   const saveDiary = async () => {
-    if (!userEmail) {
-      alert("로그인이 필요합니다!");
-      navigate("/Login");
-      return;
-    }
+    if (!userEmail) { alert("로그인이 필요합니다!"); navigate("/Login"); return; }
 
-    if (!date) return;
+    setIsSaving(true);
 
     const payload = {
       todo: uiTodoToServer(todos),
       contents: text,
       thanks: thankText,
     };
-
-    setIsSaving(true);
 
     try {
       if (hasServerData) {
@@ -138,8 +115,7 @@ function Diary() {
         await createDiaryByDate(date, payload);
         setHasServerData(true);
       }
-
-      alert("저장되었습니다!");
+      alert("서버에 안전하게 저장되었습니다!");
       navigate("/Home");
     } catch (err) {
       console.error(err);
@@ -151,9 +127,7 @@ function Diary() {
 
   const handleThrowTrash = () => {
     if (!trashText.trim()) return;
-
     setIsThrowing(true);
-
     setTimeout(() => {
       setIsTrashOpen(false);
       setTrashText("");
@@ -166,7 +140,7 @@ function Diary() {
     return (
       <div className="diary-wrapper">
         <h2 className="diary-date">{date}</h2>
-        <p>불러오는 중...</p>
+        <p style={{ fontFamily: "Gowun Batang" }}>서버에서 불러오는 중...</p>
       </div>
     );
   }
@@ -177,7 +151,6 @@ function Diary() {
 
       <div className="todo-card">
         <div className="todo-title">To Do</div>
-
         <div className="todo-input-row">
           <input
             className="todo-input"
@@ -185,28 +158,16 @@ function Diary() {
             onChange={(e) => setTodoInput(e.target.value)}
             placeholder="할 일을 입력하세요"
           />
-          <button className="todo-add-btn" onClick={addTodo}>
-            추가
-          </button>
+          <button className="todo-add-btn" onClick={addTodo}>추가</button>
         </div>
-
         <ul className="todo-list">
           {todos.map((t) => (
             <li key={t.id} className="todo-item">
               <label className="todo-left">
-                <input
-                  type="checkbox"
-                  checked={t.done}
-                  onChange={() => toggleTodo(t.id)}
-                />
-                <span className={t.done ? "todo-text done" : "todo-text"}>
-                  {t.text}
-                </span>
+                <input type="checkbox" checked={t.done} onChange={() => toggleTodo(t.id)} />
+                <span className={t.done ? "todo-text done" : "todo-text"}>{t.text}</span>
               </label>
-
-              <button className="todo-del-btn" onClick={() => deleteTodo(t.id)}>
-                삭제
-              </button>
+              <button className="todo-del-btn" onClick={() => deleteTodo(t.id)}>삭제</button>
             </li>
           ))}
         </ul>
@@ -246,12 +207,7 @@ function Diary() {
             <div className="trash-header">
               <h3>감정 쓰레기통</h3>
               {!isThrowing && (
-                <button
-                  className="close-btn"
-                  onClick={() => setIsTrashOpen(false)}
-                >
-                  ✕
-                </button>
+                <button className="close-btn" onClick={() => setIsTrashOpen(false)}>✕</button>
               )}
             </div>
             <textarea
@@ -261,11 +217,7 @@ function Diary() {
               onChange={(e) => setTrashText(e.target.value)}
               disabled={isThrowing}
             />
-            <button
-              className="throw-btn"
-              onClick={handleThrowTrash}
-              disabled={isThrowing}
-            >
+            <button className="throw-btn" onClick={handleThrowTrash} disabled={isThrowing}>
               쓰레기통에 버리기
             </button>
           </div>
