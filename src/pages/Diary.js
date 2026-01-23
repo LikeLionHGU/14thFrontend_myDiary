@@ -115,7 +115,7 @@ function Diary() {
         await createDiaryByDate(date, payload);
         setHasServerData(true);
       }
-      alert("서버에 안전하게 저장되었습니다!");
+      alert("저장되었습니다!");
       navigate("/Home");
     } catch (err) {
       console.error(err);
