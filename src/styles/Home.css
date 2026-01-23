@@ -140,3 +140,23 @@
 .react-calendar__tile--active .diary-dot {
   background-color: #ff6b6b;
 }
+
+.logout-btn {
+  margin-top: 1ch;
+  padding: 10px 24px;
+  background-color: transparent;
+  color: #555;
+  border: 1px solid #aaa;
+  border-radius: 50px;
+  font-family: "Gowun Batang", serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: black;
+  color: #F1EFE8;
+  border-color: black;
+  transform: translateY(-2px);
+}

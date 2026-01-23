@@ -49,7 +49,7 @@ function Home() {
         setMarks(nextMarks);
       } catch (err) {
         console.error(err);
-        alert("달력 데이터를 불러오지 못했습니다.");
+        // alert("달력 데이터를 불러오지 못했습니다.");
         console.error("데이터 로드 실패:", err);
       } finally {
         setIsLoading(false);
@@ -58,6 +58,18 @@ function Home() {
 
     run();
   }, [navigate]);
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("로그아웃 ㄱ?");
+    if (confirmLogout) {
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userInfo");
+
+      alert("로그아웃 완료!");
+      navigate("/Login");
+    }
+  };
 
   const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
@@ -80,15 +92,21 @@ function Home() {
         {isLoading ? (
           <div style={{ padding: 12 }}>불러오는 중...</div>
         ) : (
-          <Calendar
-            calendarType="hebrew"
-            onChange={setDate}
-            value={date}
-            tileContent={tileContent}
-            onClickDay={(clickedDate) =>
-              navigate(`/diary/${makeKeyDate(clickedDate)}`)
-            }
-          />
+            <>
+              <Calendar
+                calendarType="hebrew"
+                onChange={setDate}
+                value={date}
+                tileContent={tileContent}
+                onClickDay={(clickedDate) =>
+                  navigate(`/diary/${makeKeyDate(clickedDate)}`)
+                }
+              />
+              
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
         )}
       </div>
     </div>
